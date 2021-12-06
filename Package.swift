@@ -5,6 +5,8 @@ import PackageDescription
 
 let package = Package(
     name: "ColorGen",
+    platforms: [.macOS(.v11)],
+    
     products: [
         .executable(name: "colorgen", targets: ["ColorGenTool"])
     ],
@@ -31,5 +33,6 @@ let package = Package(
             dependencies: ["ColorPaletteGenerator"],
             resources: [.copy("Resources/Test.palette")]
         )
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
