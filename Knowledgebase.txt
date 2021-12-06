@@ -1,0 +1,28 @@
+Knowledgebase.txt - How I got to here
+=================
+
+I started with this blog post:  https://www.avanderlee.com/swift/command-line-tool-package-manager/
+
+But it was out of date, in terms of the ArgumentParser framework.
+
+Just following the docs of the ArgumentParser framework got me further.
+
+The next issue arose when trying to write unit tests.  Sometimes it would appear to have failed, but I think this is an Xcode caching issue.
+
+If you look at the Package manifest, it looks pretty straightforward, except when it comes to resources.
+
+I think the SPM requires a specific folder structure.  The following helped:
+
+https://stackoverflow.com/a/69448638
+
+noting that we have an executableTarget and not a target, but other than that, you put your test resources as a subfolder to the tests and you access it as given there.
+
+
+TODO:
+
+- Write a unit test that does an end-to-end test of the executable product using an input file and an output file.
+
+- Have a look at this post, and consider refactoring to basically follow its format:
+   https://www.swiftbysundell.com/articles/building-a-command-line-tool-using-the-swift-package-manager/
+   
+   

@@ -1,0 +1,3 @@
+import ColorPaletteGenerator
+
+CommandLineTool.main()
