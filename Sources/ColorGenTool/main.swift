@@ -1,3 +1,3 @@
-import ColorPaletteGenerator
+import Foundation
 
 CommandLineTool.main()

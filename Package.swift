@@ -6,7 +6,6 @@ import PackageDescription
 let package = Package(
     name: "ColorGen",
     platforms: [.macOS(.v11)],
-    
     products: [
         .executable(name: "colorgen", targets: ["ColorGenTool"])
     ],
@@ -21,16 +20,11 @@ let package = Package(
         .executableTarget(
             name: "ColorGenTool",
             dependencies: [
-                "ColorPaletteGenerator"
-            ]),
-        .target(
-            name: "ColorPaletteGenerator",
-            dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]),
         .testTarget(
             name: "ColorPaletteGeneratorTests",
-            dependencies: ["ColorPaletteGenerator"],
+            dependencies: ["ColorGenTool"],
             resources: [.copy("Resources/Test.palette")]
         )
     ],

@@ -1,6 +1,6 @@
 import XCTest
 import class Foundation.Bundle
-@testable import ColorPaletteGenerator
+@testable import ColorGenTool
 
 enum FileError: Error {
     case couldNotLoad

@@ -44,3 +44,6 @@ $ColorName MainTitleText
 
 ``
  
+## Relevant Links
+
+https://quickbirdstudios.com/blog/swift-package-manager-cocoapods-support/
