@@ -111,7 +111,7 @@ final class ColorPaletteGeneratorTests: XCTestCase {
         XCTAssertEqual(expectedResult, result)
     }
     
-    func testParsesAllColors() throws {
+    func testParsesAllColorsAndOmitsAliasesWithSameName() throws {
         try initializeParser(aliasesOnly: false)
         let parsedColors = try self.parser.parse()
         XCTAssertEqual(parsedColors.count, 5, "There were a total of 5 colors defined in the input file, so they should have been parsed")
@@ -120,7 +120,7 @@ final class ColorPaletteGeneratorTests: XCTestCase {
     func testParsesAliasesOnly() throws {
         try initializeParser(aliasesOnly: true)
         let parsedColors = try self.parser.parse()
-        XCTAssertEqual(parsedColors.count, 2, "There were a total of 2 color aliases defined in the input file, so they should have been parsed")
+        XCTAssertEqual(parsedColors.count, 3, "There were a total of 2 color aliases defined in the input file, so they should have been parsed")
     }
 }
 

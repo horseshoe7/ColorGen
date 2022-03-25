@@ -18,3 +18,4 @@
 
 $MyBlack PrimaryTextColor BreakingIT!   Testing some stuff here.
 $MyBlue PrimaryAppColor
+$MyBlack MyBlack This should work.

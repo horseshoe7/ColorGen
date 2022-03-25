@@ -95,7 +95,13 @@ class ColorParser {
         if self.exportAliasesOnly {
             return aliasColors
         } else {
-            return definedColors + aliasColors
+            var output = definedColors
+            for color in aliasColors {
+                if !output.contains(color) {
+                    output.append(color)
+                }
+            }
+            return output
         }
     }
     
