@@ -12,12 +12,17 @@ final class ColorPaletteGeneratorTests: XCTestCase {
     
     override func setUpWithError() throws {
         
+        try self.initializeParser()
+    }
+    
+    private func initializeParser(aliasesOnly: Bool = false) throws {
+        
         let bundle = Bundle.module
         guard let inputFile = bundle.path(forResource: "Test", ofType: "palette") else {
             throw FileError.couldNotLoad
         }
         
-        self.parser = ColorParser(inputPath: inputFile)
+        self.parser = ColorParser(inputPath: inputFile, aliasesOnly: aliasesOnly)
     }
     
     func testCommentLine() throws {
@@ -104,6 +109,18 @@ final class ColorPaletteGeneratorTests: XCTestCase {
         
         let result = try self.parser.parseColor(from: sut, definedColors: [existingColor])
         XCTAssertEqual(expectedResult, result)
+    }
+    
+    func testParsesAllColors() throws {
+        try initializeParser(aliasesOnly: false)
+        let parsedColors = try self.parser.parse()
+        XCTAssertEqual(parsedColors.count, 5, "There were a total of 5 colors defined in the input file, so they should have been parsed")
+    }
+    
+    func testParsesAliasesOnly() throws {
+        try initializeParser(aliasesOnly: true)
+        let parsedColors = try self.parser.parse()
+        XCTAssertEqual(parsedColors.count, 2, "There were a total of 2 color aliases defined in the input file, so they should have been parsed")
     }
 }
 

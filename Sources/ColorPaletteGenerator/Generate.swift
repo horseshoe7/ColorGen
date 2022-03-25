@@ -30,6 +30,9 @@ struct ColorGen: ParsableCommand {
     @Flag(help: "Whether to generate for Android, i.e. .xml format that Android requires")
     var android = false
     
+    @Flag(help: "Whether to only generate the aliases, i.e. you might not want to include the principal definitions, if they have abstract names that should not be used by your codebase.")
+    var aliasesOnly = false
+    
     mutating func run() throws {
         
         var input: String = ""
@@ -89,7 +92,7 @@ struct ColorGen: ParsableCommand {
     // When this method is invoked, the namespace is defined, there is a file at input, and output folder will exist.
     private func generateColors(namespace: String, input: String, output: String) throws {
         
-        let parser = ColorParser(inputPath: input)
+        let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly)
         
         do {
             let colorList = try parser.parse()
@@ -104,7 +107,6 @@ struct ColorGen: ParsableCommand {
             }
             
             try builder.build(colorList, with: colorListName)
-            
             
             
         } catch {

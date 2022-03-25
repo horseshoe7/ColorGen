@@ -35,9 +35,11 @@ class ColorParser {
         case invalidFormat(details: String)
     }
     
+    let exportAliasesOnly: Bool
     let inputPath: String
-    init(inputPath: String) {
+    init(inputPath: String, aliasesOnly: Bool) {
         self.inputPath = inputPath
+        self.exportAliasesOnly = aliasesOnly
     }
     
     func parse() throws -> [ColorGenColor] {
@@ -89,7 +91,12 @@ class ColorParser {
             }
         }.sorted(by: { $0.name < $1.name })
         
-        return definedColors + aliasColors
+        
+        if self.exportAliasesOnly {
+            return aliasColors
+        } else {
+            return definedColors + aliasColors
+        }
     }
     
     /// The method that parses color information from a line in the .palette file.  If you are populating the alias colors, you provide the list of known defined colors for matching purposes.
