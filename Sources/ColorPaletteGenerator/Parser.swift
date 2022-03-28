@@ -37,9 +37,11 @@ class ColorParser {
     
     let exportAliasesOnly: Bool
     let inputPath: String
-    init(inputPath: String, aliasesOnly: Bool) {
+    let printDetails: Bool
+    init(inputPath: String, aliasesOnly: Bool, printDetails: Bool) {
         self.inputPath = inputPath
         self.exportAliasesOnly = aliasesOnly
+        self.printDetails = printDetails
     }
     
     func parse() throws -> [ColorGenColor] {
@@ -166,6 +168,10 @@ class ColorParser {
                 comments = (comments as NSString).substring(from: 1)  // first character is likely a space.
             }
             
+            if self.printDetails {
+                print("Parsed Color with Name: \(colorName)")
+            }
+            
             return ColorGenColor(
                 name: colorName,
                 value: parsedValue,
@@ -197,6 +203,10 @@ class ColorParser {
             for definedColor in definedColors {
                 if definedColor.name == referenceColorName {
                     
+                    if self.printDetails {
+                        print("Parsed Alias Color with Name: \(aliasName)")
+                    }
+                    
                     return ColorGenColor(
                         name: aliasName,
                         value: definedColor.value,
@@ -205,6 +215,10 @@ class ColorParser {
                         comments: comments
                     )
                 }
+            }
+            
+            if self.printDetails {
+                print("Could not find reference color with name \(referenceColorName) to create alias \(aliasName)")
             }
         }
         

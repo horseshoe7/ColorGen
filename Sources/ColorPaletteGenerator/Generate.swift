@@ -33,6 +33,9 @@ struct ColorGen: ParsableCommand {
     @Flag(help: "Whether to only generate the aliases, i.e. you might not want to include the principal definitions, if they have abstract names that should not be used by your codebase.")
     var aliasesOnly = false
     
+    @Flag(help: "Otherwise known as a 'verbose' flag, it will print more information as it parses.")
+    var showDetails = false
+    
     mutating func run() throws {
         
         var input: String = ""
@@ -92,7 +95,7 @@ struct ColorGen: ParsableCommand {
     // When this method is invoked, the namespace is defined, there is a file at input, and output folder will exist.
     private func generateColors(namespace: String, input: String, output: String) throws {
         
-        let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly)
+        let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly, printDetails: self.showDetails)
         
         do {
             let colorList = try parser.parse()

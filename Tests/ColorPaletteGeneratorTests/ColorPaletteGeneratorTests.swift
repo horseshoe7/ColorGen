@@ -22,7 +22,7 @@ final class ColorPaletteGeneratorTests: XCTestCase {
             throw FileError.couldNotLoad
         }
         
-        self.parser = ColorParser(inputPath: inputFile, aliasesOnly: aliasesOnly)
+        self.parser = ColorParser(inputPath: inputFile, aliasesOnly: aliasesOnly, printDetails: true)
     }
     
     func testCommentLine() throws {
@@ -109,6 +109,17 @@ final class ColorPaletteGeneratorTests: XCTestCase {
         
         let result = try self.parser.parseColor(from: sut, definedColors: [existingColor])
         XCTAssertEqual(expectedResult, result)
+    }
+    
+    func testPrintsDetails() throws {
+        
+        let sut = "$BlueGrey StandardBackgroundColor This is some comment now for alias with dark mode."
+        
+        let expectedResult: ColorGenColor? = nil
+        
+        let result = try self.parser.parseColor(from: sut, definedColors: [])
+        
+        XCTAssertEqual(result, expectedResult)
     }
     
     func testParsesAllColorsAndOmitsAliasesWithSameName() throws {
