@@ -124,11 +124,11 @@ class AppleCodeBuilder: CodeBuilding {
         let colorValueConstants = buildNamedColorsList(with: colorList)
         
         let swiftFileContent = kNamedColorsEnumSwiftTemplate
-            .replacingOccurrences(of: kTemplateKeyACL, with: self.publicACL ? "public " : "")
             .replacingOccurrences(of: kTemplateKeyFrameworkName, with: self.frameworkName)
             .replacingOccurrences(of: kTemplateKeyEnumName, with: name)
             .replacingOccurrences(of: kTemplateKeyStaticColornames, with: colorStringConstants)
             .replacingOccurrences(of: kTemplateKeyStaticConstants, with: colorValueConstants)
+            .replacingOccurrences(of: kTemplateKeyACL, with: self.publicACL ? "public " : "")
         
         try swiftFileContent.write(toFile: outputFilePath, atomically: true, encoding: .utf8)
     }
