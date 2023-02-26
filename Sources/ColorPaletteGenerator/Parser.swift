@@ -35,13 +35,16 @@ class ColorParser {
         case invalidFormat(details: String)
     }
     
-    let exportAliasesOnly: Bool
+    
     let inputPath: String
+    let exportAliasesOnly: Bool
+    let publicAccess: Bool
     let printDetails: Bool
-    init(inputPath: String, aliasesOnly: Bool, printDetails: Bool) {
+    init(inputPath: String, aliasesOnly: Bool, publicAccess: Bool, printDetails: Bool) {
         self.inputPath = inputPath
         self.exportAliasesOnly = aliasesOnly
         self.printDetails = printDetails
+        self.publicAccess = publicAccess
     }
     
     func parse() throws -> [ColorGenColor] {

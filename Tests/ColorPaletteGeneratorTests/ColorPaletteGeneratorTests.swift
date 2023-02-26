@@ -22,7 +22,7 @@ final class ColorPaletteGeneratorTests: XCTestCase {
             throw FileError.couldNotLoad
         }
         
-        self.parser = ColorParser(inputPath: inputFile, aliasesOnly: aliasesOnly, printDetails: true)
+        self.parser = ColorParser(inputPath: inputFile, aliasesOnly: aliasesOnly, publicAccess: false, printDetails: true)
     }
     
     func testCommentLine() throws {

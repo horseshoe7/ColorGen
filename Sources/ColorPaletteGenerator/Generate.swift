@@ -24,6 +24,9 @@ struct ColorGen: ParsableCommand {
     @Option(name: .shortAndLong, help: "The path to the output folder.")
     var output: String?
         
+    @Flag(help: "Whether the generated colors will have public access control")
+    var publicAccess = false
+    
     @Flag(help: "Whether to generate for MacOS, i.e. export NSColor types and not UIColor types")
     var macos = false
 
@@ -95,7 +98,7 @@ struct ColorGen: ParsableCommand {
     // When this method is invoked, the namespace is defined, there is a file at input, and output folder will exist.
     private func generateColors(namespace: String, input: String, output: String) throws {
         
-        let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly, printDetails: self.showDetails)
+        let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly, publicAccess: self.publicAccess, printDetails: self.showDetails)
         
         do {
             let colorList = try parser.parse()

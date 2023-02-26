@@ -11,13 +11,15 @@ class AppleCodeBuilder: CodeBuilding {
     
     let outputPath: String
     let isForMacOS: Bool
+    let publicACL: Bool
     
     private let className: String
     private let frameworkName: String
     
-    init(outputPath: String, forMacOS: Bool) {
+    init(outputPath: String, forMacOS: Bool, publicAccess: Bool) {
         self.outputPath = outputPath
         self.isForMacOS = forMacOS
+        self.publicACL = publicAccess
         
         self.frameworkName = forMacOS ? "AppKit" : "UIKit"
         self.className = forMacOS ? "NSColor" : "UIColor"
@@ -26,7 +28,7 @@ class AppleCodeBuilder: CodeBuilding {
     func build(_ colorList: [ColorGenColor], with name: String) throws {
         
         try buildAssetsCatalog(colorList, name)
-        try buildAccompanyingCode(colorList, name)
+        try buildAccompanyingCode(colorList, name, publicACL)
     }
     
     private func buildAssetsCatalog(_ colorList: [ColorGenColor], _ name: String) throws {
@@ -107,7 +109,7 @@ class AppleCodeBuilder: CodeBuilding {
     }
     
     
-    private func buildAccompanyingCode(_ colorList: [ColorGenColor], _ name: String) throws {
+    private func buildAccompanyingCode(_ colorList: [ColorGenColor], _ name: String, publicACL: Bool) throws {
         
         let outputFilename = "\(name).swift"
         let outputFilePath = ((self.outputPath as NSString).expandingTildeInPath as NSString).appendingPathComponent(outputFilename)
@@ -122,6 +124,7 @@ class AppleCodeBuilder: CodeBuilding {
         let colorValueConstants = buildNamedColorsList(with: colorList)
         
         let swiftFileContent = kNamedColorsEnumSwiftTemplate
+            .replacingOccurrences(of: kTemplateKeyACL, with: self.publicACL ? "public " : "")
             .replacingOccurrences(of: kTemplateKeyFrameworkName, with: self.frameworkName)
             .replacingOccurrences(of: kTemplateKeyEnumName, with: name)
             .replacingOccurrences(of: kTemplateKeyStaticColornames, with: colorStringConstants)
@@ -135,7 +138,7 @@ class AppleCodeBuilder: CodeBuilding {
         let signatureKey = "<*constant_name*>"
         let valueKey     = "<*constant_string*>"
         
-        let colorStringTemplate = "\tstatic let <*constant_name*>: String = \"<*constant_string*>\""
+        let colorStringTemplate = "\t<*acl*>static let <*constant_name*>: String = \"<*constant_string*>\""
         
         return colorList.map { color -> String in
          
@@ -161,7 +164,7 @@ class AppleCodeBuilder: CodeBuilding {
         let colorStringTemplate =
 """
     <*color_comments*>
-    static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>")!
+    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>")!
 
 """
 
@@ -224,6 +227,7 @@ fileprivate let kTemplateKeyStaticConstants               = "<*static_constants*
 fileprivate let kTemplateKeyEnumName                      = "<*root_name*>"
 fileprivate let kTemplateKeyStaticColornames              = "<*static_colornames*>"
 fileprivate let kTemplateKeyFrameworkName                 = "<*import_framework_name*>"
+fileprivate let kTemplateKeyACL                           = "<*acl*>"
 
 fileprivate let kNamedColorsEnumSwiftTemplate = """
 //
@@ -233,7 +237,7 @@ fileprivate let kNamedColorsEnumSwiftTemplate = """
 
 import <*import_framework_name*>
 
-internal enum <*root_name*> {
+<*acl*>enum <*root_name*> {
 
 <*static_constants*>
 

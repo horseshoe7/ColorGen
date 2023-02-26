@@ -15,6 +15,7 @@ The Input File will ultimately generate:
 
 - An .xcassets Assets Catalog with the colors (so to be available to Interface Builder)
 - A namespaced struct that contains all the color definitions as Constants that will reference these Colors in the asset catalog.
+- You can specify whether this namespaced struct has a public ACL or is internal (default).
 
 
 ## Input File Format
