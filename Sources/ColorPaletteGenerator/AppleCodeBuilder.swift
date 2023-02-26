@@ -28,7 +28,7 @@ class AppleCodeBuilder: CodeBuilding {
     func build(_ colorList: [ColorGenColor], with name: String) throws {
         
         try buildAssetsCatalog(colorList, name)
-        try buildAccompanyingCode(colorList, name, publicACL)
+        try buildAccompanyingCode(colorList, name)
     }
     
     private func buildAssetsCatalog(_ colorList: [ColorGenColor], _ name: String) throws {
@@ -109,7 +109,7 @@ class AppleCodeBuilder: CodeBuilding {
     }
     
     
-    private func buildAccompanyingCode(_ colorList: [ColorGenColor], _ name: String, publicACL: Bool) throws {
+    private func buildAccompanyingCode(_ colorList: [ColorGenColor], _ name: String) throws {
         
         let outputFilename = "\(name).swift"
         let outputFilePath = ((self.outputPath as NSString).expandingTildeInPath as NSString).appendingPathComponent(outputFilename)

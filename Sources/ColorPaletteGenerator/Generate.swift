@@ -109,7 +109,7 @@ struct ColorGen: ParsableCommand {
             if self.android {
                 builder = AndroidCodeBuilder(outputPath: output)
             } else {
-                builder = AppleCodeBuilder(outputPath: output, forMacOS: self.macos)
+                builder = AppleCodeBuilder(outputPath: output, forMacOS: self.macos, publicAccess: self.publicAccess)
             }
             
             try builder.build(colorList, with: colorListName)
