@@ -138,7 +138,7 @@ class AppleCodeBuilder: CodeBuilding {
         let signatureKey = "<*constant_name*>"
         let valueKey     = "<*constant_string*>"
         
-        let colorStringTemplate = "\t<*acl*>static let <*constant_name*>: String = \"<*constant_string*>\""
+        let colorStringTemplate = "\t\t<*acl*>static let <*constant_name*>: String = \"<*constant_string*>\""
         
         return colorList.map { color -> String in
          
@@ -242,7 +242,7 @@ import <*import_framework_name*>
 <*static_constants*>
 
     //--------- Constants used for named colors (you will likely never need them but here for completeness)
-    internal enum Name {
+    <*acl*>enum Name {
 
 <*static_colornames*>
     }
