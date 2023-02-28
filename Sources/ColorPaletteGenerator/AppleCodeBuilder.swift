@@ -158,7 +158,7 @@ class AppleCodeBuilder: CodeBuilding {
         let colorStringTemplate =
 """
     <*color_comments*>
-    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>", in: .<*module_name*>, compatibleWith: UITraitCollection(displayGamut: .SRGB))!)!
+    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>", in: .<*module_name*>, compatibleWith: UITraitCollection(displayGamut: .SRGB))!
 
 """
 
