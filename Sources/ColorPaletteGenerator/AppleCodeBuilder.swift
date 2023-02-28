@@ -1,28 +1,21 @@
-//
-//  File.swift
-//  
-//
-//  Created by Stephen OConnor on 01.12.21.
-//
-
 import Foundation
 
 class AppleCodeBuilder: CodeBuilding {
     
     let outputPath: String
-    let isForMacOS: Bool
+    let moduleName: String
     let publicACL: Bool
     
     private let className: String
     private let frameworkName: String
     
-    init(outputPath: String, forMacOS: Bool, publicAccess: Bool) {
+    init(outputPath: String, moduleName: String, publicAccess: Bool) {
+        self.moduleName = moduleName
         self.outputPath = outputPath
-        self.isForMacOS = forMacOS
         self.publicACL = publicAccess
         
-        self.frameworkName = forMacOS ? "AppKit" : "UIKit"
-        self.className = forMacOS ? "NSColor" : "UIColor"
+        self.frameworkName = "UIKit"
+        self.className = "UIColor"
     }
     
     func build(_ colorList: [ColorGenColor], with name: String) throws {
@@ -121,7 +114,7 @@ class AppleCodeBuilder: CodeBuilding {
         }
         
         let colorStringConstants = buildNamedColorConstants(with: colorList)
-        let colorValueConstants = buildNamedColorsList(with: colorList)
+        let colorValueConstants = buildNamedColorsList(with: colorList, moduleName: self.moduleName)
         
         let swiftFileContent = kNamedColorsEnumSwiftTemplate
             .replacingOccurrences(of: kTemplateKeyFrameworkName, with: self.frameworkName)
@@ -154,17 +147,18 @@ class AppleCodeBuilder: CodeBuilding {
         }
     }
     
-    private func buildNamedColorsList(with colorList: [ColorGenColor]) -> String {
+    private func buildNamedColorsList(with colorList: [ColorGenColor], moduleName: String) -> String {
         
         let classNameKey = "<*class_name*>"
         let signatureKey = "<*color_name*>"
         let valueKey     = "<*constant_string*>"
         let commentsKey  = "<*color_comments*>"
+        let moduleNameKey   = "<*module_name*>"
         
         let colorStringTemplate =
 """
     <*color_comments*>
-    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>")!
+    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>", in: .<*module_name*>, compatibleWith: UITraitCollection(displayGamut: .SRGB))!)!
 
 """
 
@@ -206,6 +200,7 @@ class AppleCodeBuilder: CodeBuilding {
                 .replacingOccurrences(of: signatureKey, with: constantName)
                 .replacingOccurrences(of: valueKey, with: constantValue)
                 .replacingOccurrences(of: commentsKey, with: commentsValue)
+                .replacingOccurrences(of: moduleNameKey, with: moduleName)
             
             if let comments = comments {
                 return comments.appending(outputLine)

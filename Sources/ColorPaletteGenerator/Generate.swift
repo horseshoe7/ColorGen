@@ -1,7 +1,6 @@
 import ArgumentParser
 import Foundation
 
-
 struct ColorGen: ParsableCommand {
     
     static var configuration = CommandConfiguration(
@@ -18,6 +17,9 @@ struct ColorGen: ParsableCommand {
     @Argument(help: "The namespace of your colors.  e.g. MyColors, AppColors, etc.")
     var name: String
     
+    @Argument(help: "The name of the module your colors are in.  This expects the name of a static var on the Bundle class.  Defaults to 'main'.")
+    var moduleName: String?
+    
     @Option(name: .shortAndLong, help: "The path to the input file.")
     var input: String?
     
@@ -27,9 +29,6 @@ struct ColorGen: ParsableCommand {
     @Flag(help: "Whether the generated colors will have public access control")
     var publicAccess = false
     
-    @Flag(help: "Whether to generate for MacOS, i.e. export NSColor types and not UIColor types")
-    var macos = false
-
     @Flag(help: "Whether to generate for Android, i.e. .xml format that Android requires")
     var android = false
     
@@ -43,16 +42,17 @@ struct ColorGen: ParsableCommand {
         
         var input: String = ""
         var output: String = ""
+        var moduleName: String = ""
         
-        try validateArguments(input: &input, output: &output)
+        try validateArguments(input: &input, output: &output, moduleName: &moduleName)
         
-        try generateColors(namespace: name, input: input, output: output)
+        try generateColors(namespace: name, input: input, output: output, moduleName: moduleName)
         
         print("Generated Colors Successfully")
         throw ExitCode.success
     }
     
-    private func validateArguments(input: inout String, output: inout String) throws {
+    private func validateArguments(input: inout String, output: inout String, moduleName: inout String) throws {
         
         guard let inputArg = self.input else {
             throw ValidationError("You need to provide an input argument or else this tool won't work!")
@@ -60,6 +60,12 @@ struct ColorGen: ParsableCommand {
         
         guard let outputArg = self.output else {
             throw ValidationError("You need to provide an output argument or else this tool won't work!")
+        }
+        
+        if let moduleArg = self.moduleName {
+            moduleName = moduleArg
+        } else {
+            moduleName = "main"
         }
 
         let fm = FileManager.default
@@ -96,7 +102,7 @@ struct ColorGen: ParsableCommand {
     }
     
     // When this method is invoked, the namespace is defined, there is a file at input, and output folder will exist.
-    private func generateColors(namespace: String, input: String, output: String) throws {
+    private func generateColors(namespace: String, input: String, output: String, moduleName: String) throws {
         
         let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly, publicAccess: self.publicAccess, printDetails: self.showDetails)
         
@@ -109,7 +115,7 @@ struct ColorGen: ParsableCommand {
             if self.android {
                 builder = AndroidCodeBuilder(outputPath: output)
             } else {
-                builder = AppleCodeBuilder(outputPath: output, forMacOS: self.macos, publicAccess: self.publicAccess)
+                builder = AppleCodeBuilder(outputPath: output, moduleName: moduleName, publicAccess: self.publicAccess)
             }
             
             try builder.build(colorList, with: colorListName)
