@@ -17,7 +17,7 @@ struct ColorGen: ParsableCommand {
     @Argument(help: "The namespace of your colors.  e.g. MyColors, AppColors, etc.")
     var name: String
     
-    @Argument(help: "The name of the bundle your colors are in.  This expects the name of a static var on the Bundle class.  Defaults to 'main'.")
+    @Option(name: .shortAndLong, help: "The name of the bundle your colors are in.  This expects the name of a static var on the Bundle class.  Defaults to 'main'.")
     var bundle: String?
     
     @Option(name: .shortAndLong, help: "The path to the input file.")
