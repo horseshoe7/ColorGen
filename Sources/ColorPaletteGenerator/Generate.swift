@@ -17,8 +17,8 @@ struct ColorGen: ParsableCommand {
     @Argument(help: "The namespace of your colors.  e.g. MyColors, AppColors, etc.")
     var name: String
     
-    @Argument(help: "The name of the module your colors are in.  This expects the name of a static var on the Bundle class.  Defaults to 'main'.")
-    var moduleName: String?
+    @Argument(help: "The name of the bundle your colors are in.  This expects the name of a static var on the Bundle class.  Defaults to 'main'.")
+    var bundle: String?
     
     @Option(name: .shortAndLong, help: "The path to the input file.")
     var input: String?
@@ -44,15 +44,15 @@ struct ColorGen: ParsableCommand {
         var output: String = ""
         var moduleName: String = ""
         
-        try validateArguments(input: &input, output: &output, moduleName: &moduleName)
+        try validateArguments(input: &input, output: &output, bundleName: &moduleName)
         
-        try generateColors(namespace: name, input: input, output: output, moduleName: moduleName)
+        try generateColors(namespace: name, input: input, output: output, bundleName: moduleName)
         
         print("Generated Colors Successfully")
         throw ExitCode.success
     }
     
-    private func validateArguments(input: inout String, output: inout String, moduleName: inout String) throws {
+    private func validateArguments(input: inout String, output: inout String, bundleName: inout String) throws {
         
         guard let inputArg = self.input else {
             throw ValidationError("You need to provide an input argument or else this tool won't work!")
@@ -62,10 +62,10 @@ struct ColorGen: ParsableCommand {
             throw ValidationError("You need to provide an output argument or else this tool won't work!")
         }
         
-        if let moduleArg = self.moduleName {
-            moduleName = moduleArg
+        if let moduleArg = self.bundle {
+            bundleName = moduleArg
         } else {
-            moduleName = "main"
+            bundleName = "main"
         }
 
         let fm = FileManager.default
@@ -102,7 +102,7 @@ struct ColorGen: ParsableCommand {
     }
     
     // When this method is invoked, the namespace is defined, there is a file at input, and output folder will exist.
-    private func generateColors(namespace: String, input: String, output: String, moduleName: String) throws {
+    private func generateColors(namespace: String, input: String, output: String, bundleName: String) throws {
         
         let parser = ColorParser(inputPath: input, aliasesOnly: self.aliasesOnly, publicAccess: self.publicAccess, printDetails: self.showDetails)
         
@@ -115,7 +115,7 @@ struct ColorGen: ParsableCommand {
             if self.android {
                 builder = AndroidCodeBuilder(outputPath: output)
             } else {
-                builder = AppleCodeBuilder(outputPath: output, moduleName: moduleName, publicAccess: self.publicAccess)
+                builder = AppleCodeBuilder(outputPath: output, bundleName: bundleName, publicAccess: self.publicAccess)
             }
             
             try builder.build(colorList, with: colorListName)

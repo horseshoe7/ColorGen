@@ -3,14 +3,14 @@ import Foundation
 class AppleCodeBuilder: CodeBuilding {
     
     let outputPath: String
-    let moduleName: String
+    let bundleName: String
     let publicACL: Bool
     
     private let className: String
     private let frameworkName: String
     
-    init(outputPath: String, moduleName: String, publicAccess: Bool) {
-        self.moduleName = moduleName
+    init(outputPath: String, bundleName: String, publicAccess: Bool) {
+        self.bundleName = bundleName
         self.outputPath = outputPath
         self.publicACL = publicAccess
         
@@ -114,7 +114,7 @@ class AppleCodeBuilder: CodeBuilding {
         }
         
         let colorStringConstants = buildNamedColorConstants(with: colorList)
-        let colorValueConstants = buildNamedColorsList(with: colorList, moduleName: self.moduleName)
+        let colorValueConstants = buildNamedColorsList(with: colorList, bundleName: self.bundleName)
         
         let swiftFileContent = kNamedColorsEnumSwiftTemplate
             .replacingOccurrences(of: kTemplateKeyFrameworkName, with: self.frameworkName)
@@ -147,7 +147,7 @@ class AppleCodeBuilder: CodeBuilding {
         }
     }
     
-    private func buildNamedColorsList(with colorList: [ColorGenColor], moduleName: String) -> String {
+    private func buildNamedColorsList(with colorList: [ColorGenColor], bundleName: String) -> String {
         
         let classNameKey = "<*class_name*>"
         let signatureKey = "<*color_name*>"
@@ -200,7 +200,7 @@ class AppleCodeBuilder: CodeBuilding {
                 .replacingOccurrences(of: signatureKey, with: constantName)
                 .replacingOccurrences(of: valueKey, with: constantValue)
                 .replacingOccurrences(of: commentsKey, with: commentsValue)
-                .replacingOccurrences(of: moduleNameKey, with: moduleName)
+                .replacingOccurrences(of: moduleNameKey, with: bundleName)
             
             if let comments = comments {
                 return comments.appending(outputLine)
