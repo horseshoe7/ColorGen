@@ -9,7 +9,7 @@
 #7C8089 MyGrey
 #36383C MyBlack  BreakingIT!   Testing some stuff here.
 
-
+#010101 _almostBlack
 
 // ------------------  Aliases --------------
 // Aliases $NamedColor NewName
@@ -18,4 +18,5 @@
 
 $MyBlack PrimaryTextColor BreakingIT!   Testing some stuff here.
 $MyBlue PrimaryAppColor
-$MyBlack MyBlack This should work.
+$MyBlack MyBlack This should work even though it bears the same name as a named color
+$_almostBlack PrivateBlack Checking if parser is excluding private colors

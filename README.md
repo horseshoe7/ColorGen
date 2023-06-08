@@ -1,15 +1,15 @@
 # ColorPaletteGenerator
 
-ColorPaletteGenerator is a tool that takes a human-readable input file describing a color palette, and generates the associated code / assets that an Xcode project can use.
+`ColorPaletteGenerator` is a tool that takes a human-readable input file describing a color palette, and generates the associated code / assets that an Xcode project can use.
 
-This is the successor to the RMRColorTools project that was written in Objective-C and has some legacy aspects to it that just aren't necessary.  It is intended to be used in exactly the same way, but be available via the Swift Package Manager.
+This is the successor to the `RMRColorTools` project that was written in Objective-C and has some legacy aspects to it that just aren't necessary.  It is intended to be used in exactly the same way, but be available via the Swift Package Manager.
 
 In the input file, you can declare:
 
 - A hex color value and provide it a label
 - 2 hex color values for one label, if you need different colors for 'dark mode' on iOS
 - Aliases to previously declared colors, so you can define a color and give it an abstract name, but use an alias for a specific purpose (i.e. navigationBarTitle)
-
+- "Private" colors, who can be used to generate aliases.  For example, you name them abstract names, but create aliases that are functional (i.e. label, cellTitle, etc.).  It can ensure that developers aren't randomly picking colors for the interface, but are using colors named for specific purposes.
 
 The Input File will ultimately generate:
 
@@ -37,9 +37,12 @@ The Input File will ultimately generate:
 // Perhaps you want to support Dark Mode.  Just add a second hex value after the first one.  The first is always 'Any' and the second is for dark mode.
 #FF0000 #AA0000 Red You can see that the second value is darker than the first
 
+#010101 _almostBlack This is a private color and will not be exported.
 
 // Create an Alias to an already defined color.  You can see the pattern: $ExistingColorname AliasName.  ($ character required!)
 $ColorName MainTitleText
+
+$_almostBlack SecondaryTextColor But private colors can be used to generate 'functional' color names without exposing the abstract name to (say) a developer
 
 // You should ideally define your colors at the top, and all aliases below them!
 

@@ -125,13 +125,22 @@ final class ColorPaletteGeneratorTests: XCTestCase {
     func testParsesAllColorsAndOmitsAliasesWithSameName() throws {
         try initializeParser(aliasesOnly: false)
         let parsedColors = try self.parser.parse()
-        XCTAssertEqual(parsedColors.count, 5, "There were a total of 5 colors defined in the input file, so they should have been parsed")
+        XCTAssertEqual(parsedColors.count, 6, "There were a total of 8 colors defined in the input file, so they should have been parsed, but one was private and one was duplicated by an alias, so there should be 6.")
     }
     
     func testParsesAliasesOnly() throws {
         try initializeParser(aliasesOnly: true)
         let parsedColors = try self.parser.parse()
-        XCTAssertEqual(parsedColors.count, 3, "There were a total of 2 color aliases defined in the input file, so they should have been parsed")
+        XCTAssertEqual(parsedColors.count, 4, "There were a total of 4 color aliases defined in the input file, so they should have been parsed")
+    }
+    
+    func testParsesAliasesFromPrivateColorsWithoutExportingPrivates() throws {
+        try initializeParser(aliasesOnly: false)
+        let parsedColors = try self.parser.parse()
+        XCTAssertEqual(parsedColors.count, 6, "There were a total of 8 colors defined in the input file, so they should have been parsed, but one was private and one was duplicated by an alias, so there should be 6.")
+        
+        let noPrivates = parsedColors.filter({ $0.name.hasPrefix("_") })
+        XCTAssertEqual(noPrivates.count, 0, "There is a private color defined in the .palette and it should not have been exported.")
     }
 }
 

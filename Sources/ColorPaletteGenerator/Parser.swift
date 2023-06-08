@@ -41,8 +41,12 @@ class ColorParser {
     }
     
     func parse() throws -> [ColorGenColor] {
+        try parse(inputFilePath: self.inputPath)
+    }
+            
+    func parse(inputFilePath: String) throws -> [ColorGenColor] {
         
-        let fileContents = try String(contentsOfFile: self.inputPath)
+        let fileContents = try String(contentsOfFile: inputFilePath)
         
         let lines = fileContents.components(separatedBy: .newlines)
         
@@ -90,17 +94,25 @@ class ColorParser {
         }.sorted(by: { $0.name < $1.name })
         
         
+        var output: [ColorGenColor] = []
+        
         if self.exportAliasesOnly {
-            return aliasColors
+            output = aliasColors
         } else {
-            var output = definedColors
+            output = definedColors
             for color in aliasColors {
                 if !output.contains(color) {
                     output.append(color)
                 }
             }
-            return output
         }
+        
+        // Here we filter out 'private' colors that were used as intermediates
+        output = output.filter({ color in
+            return color.name.hasPrefix("_") == false // any color whose name begins with an underscore will not be exported.
+        })
+        
+        return output
     }
     
     /// The method that parses color information from a line in the .palette file.  If you are populating the alias colors, you provide the list of known defined colors for matching purposes.
