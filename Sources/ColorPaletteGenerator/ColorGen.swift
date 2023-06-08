@@ -32,6 +32,9 @@ struct ColorGen: ParsableCommand {
     @Flag(help: "Whether to generate for Android, i.e. .xml format that Android requires")
     var android = false
     
+    @Flag(help: "Whether to generate SwiftUI constants as well.  Ignored if android flag is set")
+    var swiftUI = false
+    
     @Flag(help: "Whether to only generate the aliases, i.e. you might not want to include the principal definitions, if they have abstract names that should not be used by your codebase.")
     var aliasesOnly = false
     
@@ -115,7 +118,7 @@ struct ColorGen: ParsableCommand {
             if self.android {
                 builder = AndroidCodeBuilder(outputPath: output)
             } else {
-                builder = AppleCodeBuilder(outputPath: output, bundleName: bundleName, publicAccess: self.publicAccess)
+                builder = AppleCodeBuilder(outputPath: output, bundleName: bundleName, publicAccess: self.publicAccess, generateSwiftUIColors: self.swiftUI)
             }
             
             try builder.build(colorList, with: colorListName)

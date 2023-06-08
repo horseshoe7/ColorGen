@@ -8,14 +8,17 @@ class AppleCodeBuilder: CodeBuilding {
     
     private let className: String
     private let frameworkName: String
+    private let generateSwiftUIColors: Bool
     
-    init(outputPath: String, bundleName: String, publicAccess: Bool) {
+    init(outputPath: String, bundleName: String, publicAccess: Bool, generateSwiftUIColors: Bool = false) {
         self.bundleName = bundleName
         self.outputPath = outputPath
         self.publicACL = publicAccess
         
         self.frameworkName = "UIKit"
         self.className = "UIColor"
+        
+        self.generateSwiftUIColors = generateSwiftUIColors
     }
     
     func build(_ colorList: [ColorGenColor], with name: String) throws {
@@ -115,12 +118,19 @@ class AppleCodeBuilder: CodeBuilding {
         
         let colorStringConstants = buildNamedColorConstants(with: colorList)
         let colorValueConstants = buildNamedColorsList(with: colorList, bundleName: self.bundleName)
+        let swiftUIColorValueConstants: String = {
+            guard self.generateSwiftUIColors else { return "" }
+            return buildNamedColorsList(with: colorList, bundleName: self.bundleName, forSwiftUI: true)
+        }()
         
         let swiftFileContent = kNamedColorsEnumSwiftTemplate
             .replacingOccurrences(of: kTemplateKeyFrameworkName, with: self.frameworkName)
+            .replacingOccurrences(of: kTemplateKeySwiftUIFrameworkImport, with: self.generateSwiftUIColors ? "import SwiftUI" : "")
             .replacingOccurrences(of: kTemplateKeyEnumName, with: name)
+            .replacingOccurrences(of: kTemplateKeySwiftUIEnum, with: self.generateSwiftUIColors ? kNamedColorsSwiftUIEnumTemplate : "")
             .replacingOccurrences(of: kTemplateKeyStaticColornames, with: colorStringConstants)
             .replacingOccurrences(of: kTemplateKeyStaticConstants, with: colorValueConstants)
+            .replacingOccurrences(of: kTemplateKeySwiftUIColorList, with: swiftUIColorValueConstants) // kTemplateKeySwiftUIColorList will not be presente if not substituted above.
             .replacingOccurrences(of: kTemplateKeyACL, with: self.publicACL ? "public " : "")
         
         try swiftFileContent.write(toFile: outputFilePath, atomically: true, encoding: .utf8)
@@ -131,7 +141,7 @@ class AppleCodeBuilder: CodeBuilding {
         let signatureKey = "<*constant_name*>"
         let valueKey     = "<*constant_string*>"
         
-        let colorStringTemplate = "\t\t<*acl*>static let <*constant_name*>: String = \"<*constant_string*>\""
+        let colorStringTemplate = "\t<*acl*>static let <*constant_name*>: String = \"<*constant_string*>\""
         
         return colorList.map { color -> String in
          
@@ -147,7 +157,7 @@ class AppleCodeBuilder: CodeBuilding {
         }
     }
     
-    private func buildNamedColorsList(with colorList: [ColorGenColor], bundleName: String) -> String {
+    private func buildNamedColorsList(with colorList: [ColorGenColor], bundleName: String, forSwiftUI: Bool = false) -> String {
         
         let classNameKey = "<*class_name*>"
         let signatureKey = "<*color_name*>"
@@ -155,13 +165,8 @@ class AppleCodeBuilder: CodeBuilding {
         let commentsKey  = "<*color_comments*>"
         let moduleNameKey   = "<*module_name*>"
         
-        let colorStringTemplate =
-"""
-    <*color_comments*>
-    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>", in: .<*module_name*>, compatibleWith: UITraitCollection(displayGamut: .SRGB))!
-
-"""
-
+        let colorStringTemplate = forSwiftUI ? kSwiftUIColorStringTemplate : kColorStringTemplate
+        
         var firstColor = true // defined hex colors
         var definedColorsFinished = false
         var firstReferenceColor = false // aliases
@@ -181,7 +186,7 @@ class AppleCodeBuilder: CodeBuilding {
             }
             
             if firstReferenceColor {
-                comments = "\n\n    //--------- Color Aliases who are references to defined colors above:\n\n"
+                comments = "\n\n    //--------- Color Aliases who reference other colors in your .palette file:\n\n"
                 firstReferenceColor = false
             }
             
@@ -222,7 +227,10 @@ fileprivate let kTemplateKeyStaticConstants               = "<*static_constants*
 fileprivate let kTemplateKeyEnumName                      = "<*root_name*>"
 fileprivate let kTemplateKeyStaticColornames              = "<*static_colornames*>"
 fileprivate let kTemplateKeyFrameworkName                 = "<*import_framework_name*>"
+fileprivate let kTemplateKeySwiftUIFrameworkImport        = "<*import_swiftui*>"
 fileprivate let kTemplateKeyACL                           = "<*acl*>"
+fileprivate let kTemplateKeySwiftUIEnum                   = "<*swiftui_enum*>"
+fileprivate let kTemplateKeySwiftUIColorList              = "<*static_swiftui_constants*>"
 
 fileprivate let kNamedColorsEnumSwiftTemplate = """
 //
@@ -231,10 +239,13 @@ fileprivate let kNamedColorsEnumSwiftTemplate = """
 //  Do not modify as it can easily be overwritten.
 
 import <*import_framework_name*>
+<*import_swiftui*>
 
 <*acl*>enum <*root_name*> {
 
 <*static_constants*>
+
+<*swiftui_enum*>
 
     //--------- Constants used for named colors (you will likely never need them but here for completeness)
     <*acl*>enum Name {
@@ -242,6 +253,26 @@ import <*import_framework_name*>
 <*static_colornames*>
     }
 }
+"""
+
+fileprivate let kColorStringTemplate =
+"""
+    <*color_comments*>
+    <*acl*>static let <*color_name*>: <*class_name*> = <*class_name*>(named: "<*constant_string*>", in: .<*module_name*>, compatibleWith: UITraitCollection(displayGamut: .SRGB))!
+
+"""
+
+fileprivate let kNamedColorsSwiftUIEnumTemplate = """
+    <*acl*>enum UI {
+<*static_swiftui_constants*>
+    }
+"""
+
+fileprivate let kSwiftUIColorStringTemplate =
+"""
+        <*color_comments*>
+        <*acl*>static let <*color_name*>: Color = Color("<*constant_string*>", bundle: .<*module_name*>)
+
 """
 
 // MARK: - Template Related - Assets Catalog
